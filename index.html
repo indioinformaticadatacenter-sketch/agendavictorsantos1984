@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Agenda - Victor</title>
+<link rel="icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSuvMPZ6MX7DCJqdq87Fx93v6p8vIpsFC0dPaMVTfnUA&s=10" sizes="32x32">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#000;color:#fff;min-height:100vh}
+.login-bg{position:fixed;inset:0;background:radial-gradient(circle at top,#0a1a20 0%,#000 70%);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px}
+.login-bg.oculto{display:none}
+.login-box{background:linear-gradient(145deg,#0f0f0f,#1a1a1a);border:2px solid #00d4ff;border-radius:25px;padding:35px;width:100%;max-width:380px;box-shadow:0 0 50px rgba(0,212,255,0.4)}
+.login-logo{font-size:28px;font-weight:900;letter-spacing:2px;text-align:center;margin-bottom:10px}
+.login-logo span:nth-child(1){color:#00d4ff;text-shadow:0 0 10px #00d4ff} .login-logo span:nth-child(2){color:#00ff88;text-shadow:0 0 10px #00ff88} .login-logo span:nth-child(3){color:#ffeb3b;text-shadow:0 0 10px #ffeb3b}
+.login-sub{color:#666;text-align:center;margin-bottom:25px;font-size:13px;letter-spacing:2px}
+.login-input{width:100%;padding:14px 18px;margin:10px 0;background:#000;border:2px solid #333;border-radius:15px;color:#fff;outline:none;font-size:16px}
+.login-input:focus{border-color:#00d4ff}
+.login-input.erro{border-color:#ff3b3b;animation:shake 0.3s} @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.btn-login{width:100%;background:linear-gradient(135deg,#00d4ff,#00ff88);border:none;padding:14px;border-radius:15px;color:#000;font-weight:900;font-size:16px;cursor:pointer;margin-top:15px;box-shadow:0 0 20px rgba(0,212,255,0.5)}
+.login-erro{color:#ff3b3b;text-align:center;margin-top:15px;font-size:13px;display:none} .login-erro.show{display:block}
+.header{background:linear-gradient(135deg,#000,#0a0a0a);border-bottom:3px solid #00d4ff;padding:18px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,212,255,0.3);display:none}
+.header.show{display:block}
+.logo{font-size:20px;font-weight:900} .logo span:nth-child(1){color:#00d4ff} .logo span:nth-child(2){color:#00ff88} .logo span:nth-child(3){color:#ffeb3b}
+.header-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.search-box{position:relative;flex:1;max-width:400px} .search-box input{width:100%;padding:12px 40px 12px 16px;background:#111;border:2px solid #00d4ff;border-radius:30px;color:#fff;outline:none}
+.btn-add{background:linear-gradient(135deg,#00d4ff,#00ff88);border:none;padding:10px 18px;border-radius:25px;color:#000;font-weight:800;cursor:pointer} .btn-sair{background:#222;border:1px solid #ff3b3b;color:#ff3b3b;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:12px}
+.aniversario-banner{position:fixed;top:0;left:0;right:0;background:linear-gradient(90deg,#ffeb3b,#00ff88,#00d4ff);color:#000;padding:12px;text-align:center;font-weight:900;font-size:16px;z-index:200;display:none}
+.confetti{position:fixed;width:10px;height:10px;top:-10px;z-index:199;animation:fall linear} @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.container{padding:20px;max-width:1400px;margin:0 auto;display:none} .container.show{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:20px}
+.card{background:linear-gradient(145deg,#0f0f0f,#1a1a1a);border:2px solid #222;border-radius:20px;padding:18px;transition:0.3s}
+.card:hover{border-color:#00d4ff;transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,212,255,0.3)}
+.card.aniversario-hoje{border:3px solid #ffeb3b;box-shadow:0 0 30px rgba(255,235,59,0.6);animation:pulse 2s infinite} @keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(255,235,59,0.6)}50%{box-shadow:0 0 40px rgba(255,235,59,0.9)}}
+.card-foto{width:75px;height:75px;border-radius:50%;object-fit:cover;border:3px solid #00d4ff;margin:0 auto 12px;display:block;background:#222;cursor:pointer}
+.card-nome{font-size:18px;font-weight:800;text-align:center;margin-bottom:6px} .card-info{font-size:13px;color:#aaa;margin:4px 0;display:flex;gap:6px} .card-info b{color:#00d4ff;min-width:22px}
+.card-actions{display:flex;gap:8px;margin-top:12px} .btn{flex:1;padding:7px;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:12px} .btn-edit{background:#00d4ff;color:#000} .btn-foto{background:#00ff88;color:#000} .btn-del{background:#ff3b3b;color:#fff}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:300;padding:20px} .modal-bg.ativo{display:flex}
+.modal{background:#111;border:2px solid #00d4ff;border-radius:20px;padding:22px;width:100%;max-width:430px} .modal h2{color:#00ff88;text-align:center;margin-bottom:15px} .modal input{width:100%;padding:11px 14px;margin:6px 0;background:#000;border:2px solid #333;border-radius:12px;color:#fff;outline:none}
+.modal-preview{width:90px;height:90px;border-radius:50%;object-fit:cover;margin:10px auto;display:block;border:3px solid #ffeb3b;background:#222}
+.modal-btns{display:flex;gap:10px;margin-top:12px} .btn-salvar{flex:1;background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;padding:11px;border:none;border-radius:12px;font-weight:900;cursor:pointer} .btn-cancel{flex:1;background:#333;color:#fff;padding:11px;border:none;border-radius:12px;cursor:pointer}
+.vazio{text-align:center;padding:50px;color:#666}
+</style>
+</head>
+<body>
+
+<div class="login-bg" id="telaLogin">
+  <div class="login-box">
+    <div class="login-logo"><span>AGENDA</span> <span>TELE</span><span>FÔNICA</span></div>
+    <div class="login-sub">VICTOR SANTOS</div>
+    <input type="text" id="loginUser" class="login-input" placeholder="Usuário">
+    <input type="password" id="loginPass" class="login-input" placeholder="Senha" onkeypress="if(event.key==='Enter') fazerLogin()">
+    <button class="btn-login" onclick="fazerLogin()">ENTRAR</button>
+    <div class="login-erro" id="loginErro">❌ Usuário ou senha incorretos!</div>
+  </div>
+</div>
+
+<div class="aniversario-banner" id="bannerNiver"></div>
+
+<div class="header" id="headerApp">
+  <div class="header-top">
+    <div class="logo"><span>AGENDA</span> <span>TELE</span><span>FÔNICA</span></div>
+    <div class="search-box"><input type="text" id="busca" placeholder="Buscar nome, número..."></div>
+    <button class="btn-add" onclick="abrirModal()">+ NOVO</button>
+    <button class="btn-sair" onclick="fazerLogout()">Sair</button>
+  </div>
+</div>
+
+<div class="container" id="containerApp">
+  <div class="grid" id="grid"></div>
+  <div class="vazio" id="vazio" style="display:none">📭 Nenhum contato</div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2 id="modalTitulo">Novo Contato</h2>
+    <img id="previewFoto" class="modal-preview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+    <input type="file" id="inputFoto" accept="image/*" onchange="previewImagem(this)">
+    <input type="text" id="fNome" placeholder="Nome *">
+    <input type="tel" id="fNumero" placeholder="Número *">
+    <input type="email" id="fEmail" placeholder="E-mail">
+    <input type="date" id="fAniver">
+    <div class="modal-btns"><button class="btn-cancel" onclick="fecharModal()">Cancelar</button><button class="btn-salvar" onclick="salvarContato()">Salvar</button></div>
+  </div>
+</div>
+<input type="file" id="inputFotoCard" accept="image/*" style="display:none" onchange="trocarFotoCard(this)">
+
+<script>
+const USUARIO_CORRETO="victorsantos"; const SENHA_CORRETA="@31128484vs";
+const LINK_OFICIAL="https://script.google.com/macros/s/AKfycbxItOLMOtvXmFnmBKDO6Y3dyMtKyFT_sdLaat6m_rLNbGYwRhSeTAC7ii3c0a76m_0r/exec";
+let contatos=[]; let editandoId=null; let fotoBase64=""; let fotoCardId=null;
+
+function verificarLoginSalvo(){ if(localStorage.getItem("agenda_logado")==="victorsantos"){ mostrarApp(); } }
+function fazerLogin(){
+  const u=document.getElementById("loginUser").value.trim().toLowerCase();
+  const p=document.getElementById("loginPass").value.trim().toLowerCase();
+  if(u===USUARIO_CORRETO && p===SENHA_CORRETA){ localStorage.setItem("agenda_logado","victorsantos"); document.getElementById("loginErro").classList.remove("show"); mostrarApp(); }
+  else{ document.getElementById("loginErro").classList.add("show"); document.getElementById("loginUser").classList.add("erro"); document.getElementById("loginPass").classList.add("erro"); setTimeout(()=>{ document.getElementById("loginUser").classList.remove("erro"); document.getElementById("loginPass").classList.remove("erro"); },500); }
+}
+function mostrarApp(){ document.getElementById("telaLogin").classList.add("oculto"); document.getElementById("headerApp").classList.add("show"); document.getElementById("containerApp").classList.add("show"); carregarContatos(); setInterval(()=>carregarContatos(true),3000); }
+function fazerLogout(){ localStorage.removeItem("agenda_logado"); location.reload(); }
+
+function api(acao,dados={}){ dados.acao=acao; return fetch(LINK_OFICIAL,{method:"POST",body:JSON.stringify(dados)}).then(r=>r.json()).catch(()=>fetch("",{method:"POST",body:JSON.stringify(dados)}).then(r=>r.json())); }
+function carregarContatos(sil=false){ api("getContatos").then(res=>{ if(res.ok){ contatos=res.contatos; renderizar(); if(!sil) verificarAniversarios(); } }); }
+
+// CORREÇÃO DEFINITIVA DA DATA 20/11/1984
+function formatarData(d){
+  if(!d) return "";
+  try{
+    var s = String(d).trim();
+    // Se vier 1984-11-20T03:00:00.000Z ou 1984-11-20
+    if(s.indexOf("T") > -1){
+      var dt = new Date(s);
+      var dia = dt.getUTCDate(); if(dia<10) dia="0"+dia;
+      var mes = dt.getUTCMonth()+1; if(mes<10) mes="0"+mes;
+      var ano = dt.getUTCFullYear();
+      return dia+"/"+mes+"/"+ano;
+    }
+    if(s.indexOf("-") > -1){
+      // yyyy-mm-dd
+      var p = s.substring(0,10).split("-");
+      if(p.length==3 && p[0].length==4) return p[2]+"/"+p[1]+"/"+p[0];
+    }
+    if(s.indexOf("/") > -1){
+      // já está dd/mm/yyyy - garante 2 dígitos
+      var pp = s.split("/");
+      if(pp.length==3){
+        var dd = pp[0].padStart(2,"0");
+        var mm = pp[1].padStart(2,"0");
+        return dd+"/"+mm+"/"+pp[2];
+      }
+      return s;
+    }
+    return s;
+  }catch(e){ return d; }
+}
+
+function renderizar(){
+  const busca=document.getElementById("busca").value.toLowerCase();
+  const grid=document.getElementById("grid");
+  const filtrados=contatos.filter(c=>c.nome.toLowerCase().includes(busca)||c.numero.includes(busca)||(c.email&&c.email.toLowerCase().includes(busca)));
+  if(filtrados.length==0){ grid.innerHTML=""; document.getElementById("vazio").style.display="block"; return; }
+  document.getElementById("vazio").style.display="none";
+  const hoje=new Date(); const diaHoje=hoje.getDate(); const mesHoje=hoje.getMonth()+1;
+  grid.innerHTML=filtrados.map(c=>{
+    let ehHoje=false;
+    if(c.aniversario){
+      try{
+        let d,m;
+        let s = String(c.aniversario);
+        if(s.indexOf("/")>-1){ let p=s.split("/"); d=parseInt(p[0]); m=parseInt(p[1]); }
+        else if(s.indexOf("-")>-1){ let p=s.substring(0,10).split("-"); d=parseInt(p[2]); m=parseInt(p[1]); }
+        if(d==diaHoje&&m==mesHoje) ehHoje=true;
+      }catch(e){}
+    }
+    const foto=c.foto||"https://cdn-icons-png.flaticon.com/512/149/149071.png";
+    return `<div class="card ${ehHoje?'aniversario-hoje':''}"><img class="card-foto" src="${foto}" onclick="abrirTrocaFoto('${c.id}')"><div class="card-nome">${c.nome} ${ehHoje?'🎂':''}</div><div class="card-info"><b>📞</b> ${c.numero}</div>${c.email?`<div class="card-info"><b>✉️</b> ${c.email}</div>`:''}${c.aniversario?`<div class="card-info"><b>🎂</b> ${formatarData(c.aniversario)} ${ehHoje?'<span style="color:#ffeb3b;font-weight:900"> HOJE!</span>':''}</div>`:''}<div class="card-actions"><button class="btn btn-edit" onclick="editar('${c.id}')">✏️ Editar</button><button class="btn btn-foto" onclick="abrirTrocaFoto('${c.id}')">📷 Foto</button><button class="btn btn-del" onclick="excluir('${c.id}')">🗑️ Excluir</button></div></div>`;
+  }).join("");
+}
+
+function abrirModal(){ editandoId=null; fotoBase64=""; document.getElementById("modalTitulo").innerText="Novo Contato"; document.getElementById("fNome").value=""; document.getElementById("fNumero").value=""; document.getElementById("fEmail").value=""; document.getElementById("fAniver").value=""; document.getElementById("previewFoto").src="https://cdn-icons-png.flaticon.com/512/149/149071.png"; document.getElementById("modalBg").classList.add("ativo"); }
+function fecharModal(){ document.getElementById("modalBg").classList.remove("ativo"); }
+function previewImagem(i){ const f=i.files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>{ fotoBase64=e.target.result; document.getElementById("previewFoto").src=fotoBase64; }; r.readAsDataURL(f); }
+
+function salvarContato(){
+  const nome=document.getElementById("fNome").value.trim();
+  const numero=document.getElementById("fNumero").value.trim();
+  const email=document.getElementById("fEmail").value.trim();
+  let aniversario=document.getElementById("fAniver").value;
+  // input date vem yyyy-mm-dd -> converte para dd/mm/yyyy
+  if(aniversario && aniversario.includes("-")){
+    let p=aniversario.split("-");
+    aniversario = p[2]+"/"+p[1]+"/"+p[0];
+  }
+  if(!nome||!numero){ alert("Nome e número obrigatórios!"); return; }
+  if(editandoId){ api("editContato",{id:editandoId,nome,numero,email,aniversario,foto:fotoBase64}).then(()=>{ fecharModal(); carregarContatos(); }); }
+  else { api("addContato",{nome,numero,email,aniversario,foto:fotoBase64}).then(()=>{ fecharModal(); carregarContatos(); }); }
+}
+
+function editar(id){
+  const c=contatos.find(x=>x.id==id); if(!c) return; editandoId=id; fotoBase64=c.foto||"";
+  document.getElementById("modalTitulo").innerText="Editar Contato";
+  document.getElementById("fNome").value=c.nome; document.getElementById("fNumero").value=c.numero; document.getElementById("fEmail").value=c.email;
+  // dd/mm/yyyy -> yyyy-mm-dd para o input
+  let dataInput="";
+  if(c.aniversario){
+    let s=String(c.aniversario);
+    if(s.includes("/")){ let p=s.split("/"); if(p.length==3) dataInput = p[2]+"-"+p[1].padStart(2,"0")+"-"+p[0].padStart(2,"0"); }
+    else if(s.includes("-")){ dataInput = s.substring(0,10); }
+  }
+  document.getElementById("fAniver").value=dataInput;
+  document.getElementById("previewFoto").src=c.foto||"https://cdn-icons-png.flaticon.com/512/149/149071.png"; document.getElementById("modalBg").classList.add("ativo");
+}
+
+function excluir(id){ if(!confirm("Excluir contato?")) return; api("deleteContato",{id}).then(()=>carregarContatos()); }
+function abrirTrocaFoto(id){ fotoCardId=id; document.getElementById("inputFotoCard").click(); }
+function trocarFotoCard(input){ const file=input.files[0]; if(!file||!fotoCardId) return; const reader=new FileReader(); reader.onload=e=>{ api("updateFoto",{id:fotoCardId,foto:e.target.result}).then(()=>carregarContatos()); }; reader.readAsDataURL(file); input.value=""; }
+
+function verificarAniversarios(){
+  const hoje=new Date(); const dia=hoje.getDate(); const mes=hoje.getMonth()+1; let an=[];
+  contatos.forEach(c=>{ if(!c.aniversario) return; try{ let d,m; let s=String(c.aniversario); if(s.indexOf("/")>-1){ let p=s.split("/"); d=parseInt(p[0]); m=parseInt(p[1]); } else if(s.indexOf("-")>-1){ let p=s.substring(0,10).split("-"); d=parseInt(p[2]); m=parseInt(p[1]); } if(d==dia&&m==mes) an.push(c.nome); }catch(e){} });
+  if(an.length>0){ const b=document.getElementById("bannerNiver"); b.innerHTML=`🎉🎂 HOJE É ANIVERSÁRIO DE: ${an.join(", ")}! 🎂🎉`; b.style.display="block"; soltarConfete(); setTimeout(()=>b.style.display="none",10000); }
+}
+function soltarConfete(){ const cores=["#00d4ff","#00ff88","#ffeb3b"]; for(let i=0;i<80;i++){ let conf=document.createElement("div"); conf.className="confetti"; conf.style.left=Math.random()*100+"vw"; conf.style.background=cores[Math.floor(Math.random()*cores.length)]; conf.style.animationDuration=(Math.random()*3+2)+"s"; document.body.appendChild(conf); setTimeout(()=>conf.remove(),5000); } }
+
+document.getElementById("busca").addEventListener("input", renderizar);
+verificarLoginSalvo();
+document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id=="modalBg") fecharModal(); });
+</script>
+</body>
+</html>
